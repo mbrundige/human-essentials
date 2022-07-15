@@ -23,7 +23,12 @@ module ApplicationHelper
   end
 
   def can_administrate?
-    (current_user.organization_admin? && current_user.organization_id == current_organization.id)
+    begin
+      authorize current_user.organization, :allowed_admin?
+      true
+    rescue
+      false
+    end
   end
 
   # wraps link_to_unless_current to provide Foundation6 friendly <a> tags

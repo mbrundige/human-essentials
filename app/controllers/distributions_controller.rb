@@ -116,13 +116,13 @@ class DistributionsController < ApplicationController
 
   def edit
     @distribution = Distribution.includes(:line_items).includes(:storage_location).find(params[:id])
-    if (!@distribution.complete? && @distribution.future?) || current_user.organization_admin?
+    authorize @distribution
+    if !@distribution.complete? && @distribution.future?
       @distribution.line_items.build if @distribution.line_items.size.zero?
       @items = current_organization.items.alphabetized
       @storage_locations = current_organization.storage_locations.has_inventory_items.alphabetized
     else
-      redirect_to distributions_path, error: 'To edit a distribution,
-      you must be an organization admin or the current date must be later than today.'
+      redirect_to distributions_path, error: 'To edit a distribution, the current date must be later than today.'
     end
   end
 

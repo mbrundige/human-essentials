@@ -24,9 +24,6 @@ class CreateRoles < ActiveRecord::Migration[7.0]
           main_user = ::User.create!(attrs)
         end
         main_user.add_role(:partner, user.partner)
-      rescue
-        puts user.attributes
-        raise
       end
     end
 

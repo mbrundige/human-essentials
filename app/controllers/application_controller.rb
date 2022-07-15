@@ -1,5 +1,6 @@
 # Base Controller. There is some magic in here that handles organization-scoping for routes
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
   add_flash_types :error
   include DateHelper
 
@@ -93,7 +94,7 @@ class ApplicationController < ActionController::Base
   end
 
   def dashboard_path_from_user
-    if current_user.super_admin?
+    if current_user.has_role?(:super_admin)
       admin_dashboard_path
     else
       dashboard_path(current_user.organization)

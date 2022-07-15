@@ -98,6 +98,11 @@ class Organization < ApplicationRecord
     end
   end
 
+  attr_accessor :organization_admin
+  before_save do
+    self.add_role(:org_admin, self.organization) if self.organization_admin?
+  end
+
   before_update :sync_visible_partner_form_sections, if: :partner_form_fields_changed?
 
   after_create do
@@ -142,7 +147,6 @@ class Organization < ApplicationRecord
     )
 
     users.build(
-      organization_admin: true,
       email: account_request.email,
       name: account_request.name
     )

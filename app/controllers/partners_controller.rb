@@ -108,11 +108,11 @@ class PartnersController < ApplicationController
 
   def invite_partner_user
     partner = current_organization.partners.find(params[:partner])
-    existing_partner_user = PartnerUser.find_by(email: params[:email], partner: partner.profile)
+    existing_partner_user = User.find_by(email: params[:email], partner: partner.profile)
     if existing_partner_user
       existing_partner_user.invite!
     else
-      PartnerUser.invite!(email: params[:email], partner: partner.profile)
+      User.invite!(email: params[:email], partner: partner.profile)
     end
 
     redirect_to partner_path(partner), notice: "We have invited #{params[:email]} to #{partner.name}!"

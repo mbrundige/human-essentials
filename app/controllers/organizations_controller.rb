@@ -35,7 +35,7 @@ class OrganizationsController < ApplicationController
 
   def promote_to_org_admin
     user = User.find_by!(id: params[:user_id], organization_id: current_organization.id)
-    user.update(organization_admin: true)
+    user.add_role(:org_admin, user.organization)
     redirect_to organization_path, notice: "User has been promoted!"
   end
 

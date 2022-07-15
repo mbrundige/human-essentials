@@ -42,19 +42,30 @@ FactoryBot.define do
     password_confirmation { "password!" }
     organization { Organization.try(:first) || create(:organization) }
 
+    after(:create) do |user|
+      user.add_role(:bank, user.organization)
+    end
+
     factory :organization_admin do
       name { "Very Organized Admin" }
-      organization_admin { true }
+      after(:create) do |user|
+        user.add_role(:org_admin, user.organization)
+      end
     end
 
     factory :super_admin do
       name { "Administrative User" }
-      super_admin { true }
+      after(:create) do |user|
+        user.add_role(:super_admin)
+      end
     end
 
     factory :super_admin_no_org do
       name { "Administrative User No Org" }
-      super_admin { true }
+      after(:create) do |user|
+        user.remove_role(user.roles.first.name)
+        user.add_role(:super_admin)
+      end
       organization_id { nil }
     end
 
