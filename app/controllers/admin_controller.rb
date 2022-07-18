@@ -1,10 +1,9 @@
 # [Super Admin] This is the parent controller for the Admin namespace, and also provides the Dashboard data for SuperAdmins.
 class AdminController < ApplicationController
-  skip_before_action :authorize_user
   before_action :require_admin
 
   def require_admin
-    verboten! unless authorize :admin, :allowed?, policy_class: SuperAdminPolicy
+    verboten! unless current_user.super_admin?
   end
 
   def dashboard

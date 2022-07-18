@@ -2,6 +2,14 @@ require "active_support/core_ext/module/aliasing"
 
 # Encapsulates view methods that need some business logic
 module ApplicationHelper
+  def dashboard_path_from_user
+    if current_user.super_admin?
+      admin_dashboard_path
+    else
+      dashboard_path(current_user.organization)
+    end
+  end
+
   def humanize_boolean(boolean)
     I18n.t((!!boolean).to_s)
   end
@@ -23,12 +31,7 @@ module ApplicationHelper
   end
 
   def can_administrate?
-    begin
-      authorize current_user.organization, :allowed_admin?
-      true
-    rescue
-      false
-    end
+    (current_user.organization_admin? && current_user.organization_id == current_organization.id)
   end
 
   # wraps link_to_unless_current to provide Foundation6 friendly <a> tags

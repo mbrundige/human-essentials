@@ -35,10 +35,9 @@
 #
 
 class User < ApplicationRecord
-  rolify
   include Discard::Model
   belongs_to :organization, optional: true
-  belongs_to :partner, optional: true
+  belongs_to :partner, class_name: 'Partners::Partner', optional: true
 
   # :invitable is from the devise_invitable gem
   # If you change any of these options, adjust ConsolidatedLoginsController::DeviseMappingShunt accordingly
@@ -52,6 +51,8 @@ class User < ApplicationRecord
 
   default_scope -> { kept }
   scope :alphabetized, -> { order(discarded_at: :desc, name: :asc) }
+  scope :partner_users, -> { where.not(partner_id: nil) }
+  scope :org_users, -> { where.not(organization_id: nil) }
 
   has_many :requests, class_name: 'Partners::Request', foreign_key: :partner_id, dependent: :destroy, inverse_of: :user
   has_many :submitted_partner_requests, class_name: 'Partners::Request', foreign_key: :partner_user_id, dependent: :destroy, inverse_of: :partner_user
@@ -70,7 +71,10 @@ class User < ApplicationRecord
   end
 
   def kind
-    roles.join(', ').presence || "normal"
+    return "super" if super_admin?
+    return "admin" if organization_admin?
+
+    "normal"
   end
 
   def flipper_id

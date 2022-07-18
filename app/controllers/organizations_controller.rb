@@ -35,16 +35,16 @@ class OrganizationsController < ApplicationController
 
   def promote_to_org_admin
     user = User.find_by!(id: params[:user_id], organization_id: current_organization.id)
-    user.add_role(:org_admin, user.organization)
+    user.update(organization_admin: true)
     redirect_to organization_path, notice: "User has been promoted!"
   end
 
   def demote_to_user
     user = User.find_by!(id: params[:user_id], organization_id: current_organization.id)
-    if user.has_role?(:super_admin)
+    if user.super_admin?
       notice = "Unable to convert super to user."
     else
-      user.remove_role(:org_admin)
+      user.update(organization_admin: false)
       notice = "Admin has been changed to User!"
     end
 
@@ -64,6 +64,10 @@ class OrganizationsController < ApplicationController
   end
 
   private
+
+  def authorize_user
+    verboten! unless current_user.super_admin? || (current_organization.id == current_user.organization_id)
+  end
 
   def organization_params
     params.require(:organization).permit(

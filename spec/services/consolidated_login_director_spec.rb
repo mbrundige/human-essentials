@@ -8,12 +8,12 @@ RSpec.describe ConsolidatedLoginDirector, skip_seed: true do
   end
 
   let(:partner_user) do
-    instance_double(Partners::User, email: "partner@example.com", partner: double(name: "A Partner"))
+    instance_double(::User, email: "partner@example.com", partner: double(name: "A Partner"))
   end
 
   before do
-    allow(User).to receive(:find_by).and_return(user)
-    allow(Partners::User).to receive(:find_by).and_return(partner_user)
+    allow(director).to receive(:org_user).and_return(user)
+    allow(director).to receive(:partner_user).and_return(partner_user)
   end
 
   context "before lookup" do
@@ -57,7 +57,7 @@ RSpec.describe ConsolidatedLoginDirector, skip_seed: true do
     end
 
     let(:partner_user) do
-      instance_double(Partners::User, email: "both@example.com", partner: double(name: "A Partner"))
+      instance_double(::User, email: "both@example.com", partner: double(name: "A Partner"))
     end
 
     it "directs the user to pick an organization" do

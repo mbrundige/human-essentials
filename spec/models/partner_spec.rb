@@ -154,11 +154,11 @@ RSpec.describe Partner, type: :model, skip_seed: true do
   describe '#invite_new_partner' do
     let(:partner) { create(:partner) }
 
-    it "should call the PartnerUser.invite! when the partner is changed" do
-      allow(PartnerUser).to receive(:invite!)
+    it "should call the User.invite! when the partner is changed" do
+      allow(User).to receive(:invite!)
       partner.email = "randomtest@email.com"
       partner.save!
-      expect(PartnerUser).to have_received(:invite!).with(
+      expect(User).to have_received(:invite!).with(
         {email: "randomtest@email.com", partner: partner.profile}
       )
     end
@@ -177,8 +177,8 @@ RSpec.describe Partner, type: :model, skip_seed: true do
     subject { partner.primary_partner_user }
     let(:partner) { create(:partner) }
 
-    it 'should return the asssociated primary Partners::User' do
-      partner_users = Partners::User.where(partner_id: partner.profile.id)
+    it 'should return the asssociated primary User' do
+      partner_users = ::User.where(partner_id: partner.profile.id)
       expect(partner_users).to include(subject)
     end
   end

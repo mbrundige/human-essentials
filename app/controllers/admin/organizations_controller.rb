@@ -33,10 +33,10 @@ class Admin::OrganizationsController < AdminController
     account_request = params[:token] && AccountRequest.get_by_identity_token(params[:token])
 
     if account_request.blank?
-      @organization.users.build
+      @organization.users.build(organization_admin: true)
     elsif account_request.processed?
       flash[:error] = "The account request had already been processed and cannot be used again"
-      @organization.users.build
+      @organization.users.build(organization_admin: true)
     else
       @organization.assign_attributes_from_account_request(account_request)
     end
@@ -48,9 +48,7 @@ class Admin::OrganizationsController < AdminController
 
     if @organization.save
       Organization.seed_items(@organization)
-      user = @organization.users.last
-      user.add_role(:org_admin, @organization)
-      user.invite!
+      @organization.users.last.invite!
       redirect_to admin_organizations_path, notice: "Organization added!"
     else
       flash[:error] = "Failed to create Organization."
@@ -77,6 +75,6 @@ class Admin::OrganizationsController < AdminController
   def organization_params
     params.require(:organization)
           .permit(:name, :short_name, :street, :city, :state, :zipcode, :email, :url, :logo, :intake_location, :default_email_text, :account_request_id, :reminder_day, :deadline_day,
-                  users_attributes: %i(name email))
+                  users_attributes: %i(name email organization_admin))
   end
 end

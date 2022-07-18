@@ -9,11 +9,19 @@ class ConsolidatedLoginDirector
     @resource_name = "user"
   end
 
+  def org_user(email)
+    User.org_users.find_by(email: email)
+  end
+
+  def partner_user(email)
+    User.partner_users.find_by(email: email)
+  end
+
   def lookup(params)
     email, selection = params.values_at("email", "organization")
 
-    @user = User.find_by(email: email)
-    @partner_user = Partners::User.find_by(email: email)
+    @user = org_user(email)
+    @partner_user = partner_user(email)
 
     selected_login(selection) ||
       options ||

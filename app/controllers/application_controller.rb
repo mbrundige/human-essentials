@@ -1,6 +1,5 @@
 # Base Controller. There is some magic in here that handles organization-scoping for routes
 class ApplicationController < ActionController::Base
-  include Pundit::Authorization
   add_flash_types :error
   include DateHelper
 
@@ -33,23 +32,22 @@ class ApplicationController < ActionController::Base
 
     if current_organization.present? && !options.key?(:organization_id)
       options[:organization_id] = current_organization.to_param
-    elsif current_user.has_role?(:super_admin)
+    elsif current_user && !current_user.super_admin? && current_user.organization.present?
+      options[:organization_id] = current_user.organization.to_param
+    elsif current_user&.super_admin?
       # FIXME: This *might* not be the best way to approach this...
       options[:organization_id] = "admin"
-    elsif current_user.organization.present?
-      options[:organization_id] = current_user.organization.to_param
     end
     options
   end
 
   def authorize_user
     return unless params[:controller] # part of omniauth controller flow
-    return if params[:controller].include?("devise")
-    verboten! unless authorize current_organization, :allowed?
+    verboten! unless params[:controller].include?("devise") || current_user.super_admin? || current_organization.id == current_user.organization_id
   end
 
   def authorize_admin
-    verboten! unless authorize current_organization, :allowed_admin?
+    verboten! unless current_user.super_admin? || (current_user.organization_admin? && current_organization.id == current_user.organization_id)
   end
 
   def log_active_user
@@ -91,14 +89,6 @@ class ApplicationController < ActionController::Base
 
   def swaddled
     response.headers["swaddled-by"] = "rubyforgood"
-  end
-
-  def dashboard_path_from_user
-    if current_user.has_role?(:super_admin)
-      admin_dashboard_path
-    else
-      dashboard_path(current_user.organization)
-    end
   end
 
   protected

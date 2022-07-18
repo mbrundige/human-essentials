@@ -239,7 +239,7 @@ note = [
                                         status_in_diaper_base: partner_option[:status]
                                       })
 
-  Partners::User.create!(
+  ::User.create!(
     name: Faker::Name.name,
     password: "password!",
     password_confirmation: "password!",
@@ -249,7 +249,7 @@ note = [
     last_sign_in_at: Time.utc(2021, 9, 9, 11, 34, 4)
   )
 
-  Partners::User.create!(
+  ::User.create!(
     name: Faker::Name.name,
     password: "password!",
     password_confirmation: "password!",

@@ -83,14 +83,13 @@ RSpec.describe User, type: :model do
 
       it "retrieves users in the correct order" do
         create_default_users
-        alphabetized_list = described_class.with_discarded.alphabetized
+        alphabetized_list = described_class.org_users.with_discarded.alphabetized
 
         expect(alphabetized_list).to eq(
           [
             a_name_user,
             @organization_admin,
             @super_admin,
-            @super_admin_no_org,
             @user,
             z_name_user,
             deactivated_a_name_user,
@@ -109,9 +108,9 @@ RSpec.describe User, type: :model do
     end
 
     it "#kind" do
-      expect(build(:super_admin).kind).to eq("super_admin")
-      expect(build(:organization_admin).kind).to eq("org_admin")
-      expect(build(:user).kind).to eq("bank")
+      expect(build(:super_admin).kind).to eq("super")
+      expect(build(:organization_admin).kind).to eq("admin")
+      expect(build(:user).kind).to eq("normal")
     end
 
     it "#reinvitable?" do
