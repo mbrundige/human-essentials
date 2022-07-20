@@ -10,7 +10,7 @@ task :fetch_latest_db => :environment do
   backup = fetch_latest_backups
 
   puts "Recreating databases..."
-  system("RAILS_ENV=development rails db:drop:create:migrate")
+  system("RAILS_ENV=development rails db:drop db:create db:schema:load db:migrate")
 
   puts "Restoring the database with #{backup.name}"
   backup_filepath = fetch_file_path(backup)

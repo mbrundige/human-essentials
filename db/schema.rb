@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_17_144531) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_22_224746) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -646,16 +646,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_17_144531) do
     t.index ["status"], name: "index_requests_on_status"
   end
 
-  create_table "roles", force: :cascade do |t|
-    t.string "name"
-    t.string "resource_type"
-    t.bigint "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
-    t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
-  end
-
   create_table "storage_locations", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "address"
@@ -710,23 +700,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_17_144531) do
     t.datetime "discarded_at", precision: nil
     t.string "provider"
     t.string "uid"
-    t.bigint "partner_id"
     t.index ["discarded_at"], name: "index_users_on_discarded_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invitations_count"], name: "index_users_on_invitations_count"
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
-    t.index ["partner_id"], name: "index_users_on_partner_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  end
-
-  create_table "users_roles", id: false, force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "role_id"
-    t.index ["role_id"], name: "index_users_roles_on_role_id"
-    t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
-    t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
   create_table "vendors", force: :cascade do |t|
@@ -788,5 +768,4 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_17_144531) do
   add_foreign_key "requests", "distributions"
   add_foreign_key "requests", "organizations"
   add_foreign_key "requests", "partners"
-  add_foreign_key "users", "partner_profiles", column: "partner_id"
 end
