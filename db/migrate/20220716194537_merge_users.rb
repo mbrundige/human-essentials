@@ -5,6 +5,8 @@ class MergeUsers < ActiveRecord::Migration[7.0]
       self.table_name = 'partner_users'
     end
 
+    ::User.reset_column_information
+
     # ignore password issues for now
     User.define_method(:password_required?) { false }
 

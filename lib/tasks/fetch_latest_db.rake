@@ -11,11 +11,11 @@ task :fetch_latest_db => :environment do
 
   puts "Recreating databases..."
   system("bin/rails db:environment:set RAILS_ENV=development")
-  system("rails db:drop db:create db:schema:load")
+  system("rails db:drop db:create")
 
   puts "Restoring the database with #{backup.name}"
   backup_filepath = fetch_file_path(backup)
-  system("pg_restore --clean --no-acl --no-owner -h localhost -d diaper_dev #{backup_filepath}")
+  system("pg_restore --clean --no-acl --if-exists --no-owner -h localhost -d diaper_dev #{backup_filepath}")
   puts "Done!"
 
   # Update the ar_internal_metadata table to have the correct environment
